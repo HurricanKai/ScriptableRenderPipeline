@@ -152,7 +152,7 @@ namespace UnityEditor.Experimental.Rendering.HDPipeline
             (serialized, owner) => k_ExpandedState[Expandable.General],
             CED.Group((serialized, owner) =>
             { 
-                if ((HDAdditionalCameraData.RenderingPath)serialized.renderingPath.intValue == HDAdditionalCameraData.RenderingPath.Custom)
+                if (!serialized.passThrough.boolValue && serialized.customRenderingSettings.boolValue)
                     FrameSettingsUI.Inspector().Draw(serialized.frameSettings, owner);
                 else
                     EditorGUILayout.Space();
@@ -388,7 +388,9 @@ namespace UnityEditor.Experimental.Rendering.HDPipeline
 
         static void Drawer_FieldRenderingPath(SerializedHDCamera p, Editor owner)
         {
-            EditorGUILayout.PropertyField(p.renderingPath, renderingPathContent);
+            EditorGUILayout.PropertyField(p.passThrough);
+            using (new EditorGUI.DisabledScope(p.passThrough.boolValue))
+                EditorGUILayout.PropertyField(p.customRenderingSettings, renderingPathContent);
         }
 
         static void Drawer_FieldRenderTarget(SerializedHDCamera p, Editor owner)

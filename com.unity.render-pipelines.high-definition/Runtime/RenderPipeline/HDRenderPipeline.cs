@@ -216,6 +216,18 @@ namespace UnityEngine.Experimental.Rendering.HDPipeline
         ScriptableCullingParameters frozenCullingParams;
         bool frozenCullingParamAvailable = false;
 
+        public bool showCascade
+        {
+            get => m_DebugDisplaySettings.GetDebugLightingMode() == DebugLightingMode.VisualizeCascade;
+            set
+            {
+                if (value)
+                    m_DebugDisplaySettings.SetDebugLightingMode(DebugLightingMode.VisualizeCascade);
+                else
+                    m_DebugDisplaySettings.SetDebugLightingMode(DebugLightingMode.None);
+            }
+        }
+
         public HDRenderPipeline(HDRenderPipelineAsset asset)
         {
             m_Asset = asset;
@@ -865,7 +877,7 @@ namespace UnityEngine.Experimental.Rendering.HDPipeline
                 var cmd = CommandBufferPool.Get("");
 
                 // Specific pass to simply display the content of the camera buffer if users have fill it themselves (like video player)
-                if (additionalCameraData && additionalCameraData.renderingPath == HDAdditionalCameraData.RenderingPath.FullscreenPassthrough)
+                if (additionalCameraData && additionalCameraData.fullscreenPassthrough)
                 {
                     renderContext.ExecuteCommandBuffer(cmd);
                     CommandBufferPool.Release(cmd);

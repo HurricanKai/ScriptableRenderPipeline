@@ -35,6 +35,8 @@ namespace UnityEditor.Experimental.Rendering.HDPipeline
         static readonly GUIContent nearPlaneContent = CoreEditorUtils.GetContent("Near|The closest point relative to the camera that drawing will occur.");
         static readonly GUIContent farPlaneContent = CoreEditorUtils.GetContent("Far|The furthest point relative to the camera that drawing will occur.");
 
+        static readonly GUIContent renderingPathContent = CoreEditorUtils.GetContent("Custom Frame Settings");
+
         // TODO: Tooltips
         static readonly GUIContent isoContent = CoreEditorUtils.GetContent("Iso|");
         static readonly GUIContent shutterSpeedContent = CoreEditorUtils.GetContent("Shutter Speed|");
@@ -43,8 +45,6 @@ namespace UnityEditor.Experimental.Rendering.HDPipeline
         static readonly GUIContent curvatureContent = CoreEditorUtils.GetContent("Curvature|");
         static readonly GUIContent barrelClippingContent = CoreEditorUtils.GetContent("Barrel Clipping|");
         static readonly GUIContent anamorphismContent = CoreEditorUtils.GetContent("Anamorphism|");
-
-        static readonly GUIContent renderingPathContent = CoreEditorUtils.GetContent("Rendering Path");
 
         static readonly GUIContent antialiasingContent = CoreEditorUtils.GetContent("Anti-aliasing|The anti-aliasing method to use.");
         static readonly GUIContent ditheringContent = CoreEditorUtils.GetContent("Dithering|Should we apply 8-bit dithering to the final render?");
