@@ -110,7 +110,9 @@ namespace UnityEditor.VFX.UI
             m_TitleField.visible = true;
             UpdateTitleFieldRect();
 
-            m_TitleField.Q("unity-text-input").Focus();
+            m_TitleField.Q(TextField.textInputUssName).visible = false;
+            m_TitleField.Q(TextField.textInputUssName).visible = true;
+            m_TitleField.Q(TextField.textInputUssName).Focus();
             m_TitleField.SelectAll();
         }
 

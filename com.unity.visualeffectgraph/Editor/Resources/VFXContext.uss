@@ -189,11 +189,6 @@ VFXContextUI #footer #icon
     --unity-image:resource("VFX/Execution");
 }
 
-VFXContextUI *
-{
-    font-size:11;
-}
-
 VFXContextUI #block-container {
     -unity-text-align:upper-center;
 
