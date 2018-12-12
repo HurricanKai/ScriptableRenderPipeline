@@ -12,7 +12,7 @@ Shader "Hidden/HDRenderPipeline/FinalPass"
         #include "Packages/com.unity.render-pipelines.core/ShaderLibrary/Color.hlsl"
         #include "Packages/com.unity.render-pipelines.high-definition/Runtime/ShaderLibrary/ShaderVariables.hlsl"
 
-        #define FXAA_HDR_MAPUNMAP   1
+        #define FXAA_HDR_MAPUNMAP   0
         #define FXAA_SPAN_MAX       (8.0)
         #define FXAA_REDUCE_MUL     (1.0 / 8.0)
         #define FXAA_REDUCE_MIN     (1.0 / 128.0)
@@ -76,10 +76,23 @@ Shader "Hidden/HDRenderPipeline/FinalPass"
             #if FXAA
             {
                 // Edge detection
-                float lumaNW = Luminance(Load(posInputs.positionSS, -1, -1));
-                float lumaNE = Luminance(Load(posInputs.positionSS,  1, -1));
-                float lumaSW = Luminance(Load(posInputs.positionSS, -1,  1));
-                float lumaSE = Luminance(Load(posInputs.positionSS,  1,  1));
+                float3 rgbNW = Load(posInputs.positionSS, -1, -1);
+                float3 rgbNE = Load(posInputs.positionSS,  1, -1);
+                float3 rgbSW = Load(posInputs.positionSS, -1,  1);
+                float3 rgbSE = Load(posInputs.positionSS,  1,  1);
+
+                #if !FXAA_HDR_MAPUNMAP
+                rgbNW = saturate(rgbNW);
+                rgbNE = saturate(rgbNE);
+                rgbSW = saturate(rgbSW);
+                rgbSE = saturate(rgbSE);
+                outColor = saturate(outColor);
+                #endif
+
+                float lumaNW = Luminance(rgbNW);
+                float lumaNE = Luminance(rgbNE);
+                float lumaSW = Luminance(rgbSW);
+                float lumaSE = Luminance(rgbSE);
                 float lumaM  = Luminance(outColor);
 
                 float2 dir;
@@ -103,6 +116,11 @@ Shader "Hidden/HDRenderPipeline/FinalPass"
                 rgb13 = FastTonemap(rgb13);
                 rgb23 = FastTonemap(rgb23);
                 rgb33 = FastTonemap(rgb33);
+                #else
+                rgb03 = saturate(rgb03);
+                rgb13 = saturate(rgb13);
+                rgb23 = saturate(rgb23);
+                rgb33 = saturate(rgb33);
                 #endif
 
                 float3 rgbA = 0.5 * (rgb13 + rgb23);
