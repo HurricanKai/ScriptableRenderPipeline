@@ -8,7 +8,8 @@ namespace UnityEngine.Experimental.Rendering.HDPipeline
     public partial class HDRenderPipelineEditorResources : ScriptableObject
     {
         public GameObject defaultScene;
-        public VolumeProfile defaultVolumeProfile;
+        public VolumeProfile defaultRenderSettingsProfile;
+        public VolumeProfile defaultPostProcessingProfile;
         public DiffusionProfileSettings defaultDiffusionProfileSettings;
 
         [Serializable]
