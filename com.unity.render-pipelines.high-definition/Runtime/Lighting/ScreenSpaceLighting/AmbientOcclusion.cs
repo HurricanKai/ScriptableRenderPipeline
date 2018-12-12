@@ -15,7 +15,7 @@ namespace UnityEngine.Experimental.Rendering.HDPipeline
         public ClampedFloatParameter thicknessModifier = new ClampedFloatParameter(1f, 1f, 10f);
 
         [Tooltip("Defines how much of the occlusion should be affected by ambient lighting.")]
-        public ClampedFloatParameter directLightingStrength = new ClampedFloatParameter(1f, 0f, 1f);
+        public ClampedFloatParameter directLightingStrength = new ClampedFloatParameter(0f, 0f, 1f);
 
         // Hidden parameters
         [HideInInspector] public ClampedFloatParameter noiseFilterTolerance = new ClampedFloatParameter(0f, -8f, 0f);
