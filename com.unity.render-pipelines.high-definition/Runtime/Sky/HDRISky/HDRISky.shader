@@ -73,7 +73,7 @@ Shader "Hidden/HDRenderPipeline/Sky/HDRISky"
     float4 FragRender(Varyings input) : SV_Target
     {
         float4 color = RenderSky(input);
-        color.rgb *= LOAD_TEXTURE2D(_ExposureTexture, int2(0, 0)).x;
+        color.rgb *= GetCurrentExposureMultiplier();
         return color;
     }
 

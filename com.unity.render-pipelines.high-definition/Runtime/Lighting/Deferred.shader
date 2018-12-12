@@ -130,11 +130,8 @@ Shader "Hidden/HDRenderPipeline/Deferred"
                 float3 specularLighting;
                 LightLoop(V, posInput, preLightData, bsdfData, builtinData, LIGHT_FEATURE_MASK_FLAGS_OPAQUE, diffuseLighting, specularLighting);
 
-            #ifndef DEBUG_DISPLAY
-                float exposure = LOAD_TEXTURE2D(_ExposureTexture, int2(0, 0)).x;
-                diffuseLighting *= exposure;
-                specularLighting *= exposure;
-            #endif
+                diffuseLighting *= GetCurrentExposureMultiplier();
+                specularLighting *= GetCurrentExposureMultiplier();
 
                 Outputs outputs;
 

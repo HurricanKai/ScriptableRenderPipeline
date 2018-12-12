@@ -227,6 +227,7 @@ namespace UnityEngine.Experimental.Rendering.HDPipeline
             }
 
             cmd.SetGlobalTexture(HDShaderIDs._ExposureTexture, GetExposureTexture(camera));
+            cmd.SetGlobalTexture(HDShaderIDs._PrevExposureTexture, GetPreviousExposureTexture(camera));
         }
 
         public void Render(CommandBuffer cmd, HDCamera camera, BlueNoise blueNoise, RTHandle colorBuffer, RTHandle lightingBuffer)
@@ -409,10 +410,18 @@ namespace UnityEngine.Experimental.Rendering.HDPipeline
 
         public RTHandle GetExposureTexture(HDCamera camera)
         {
-            // 1x1 pixel, holds the current exposure value in EV100 in the red channel
+            // 1x1 pixel, holds the current exposure multiplied in the red channel and EV100 value
+            // in the green channel
             // One frame delay + history RTs being flipped at the beginning of the frame means we
             // have to grab the exposure marked as "previous"
             var rt = camera.GetPreviousFrameRT((int)HDCameraFrameHistoryType.Exposure);
+            return rt ?? m_EmptyExposureTexture;
+        }
+
+        public RTHandle GetPreviousExposureTexture(HDCamera camera)
+        {
+            // See GetExposureTexture
+            var rt = camera.GetCurrentFrameRT((int)HDCameraFrameHistoryType.Exposure);
             return rt ?? m_EmptyExposureTexture;
         }
 
@@ -435,7 +444,6 @@ namespace UnityEngine.Experimental.Rendering.HDPipeline
                 cmd.SetComputeVectorParam(cs, HDShaderIDs._ExposureParams, new Vector4(m_Exposure.compensation, m_PhysicalCamera.aperture, m_PhysicalCamera.shutterSpeed, m_PhysicalCamera.iso));
             }
 
-            cmd.SetComputeTextureParam(cs, kernel, HDShaderIDs._PreviousExposureTexture, prevExposure);
             cmd.SetComputeTextureParam(cs, kernel, HDShaderIDs._OutputTexture, prevExposure);
             cmd.DispatchCompute(cs, kernel, 1, 1, 1);
         }
@@ -446,7 +454,7 @@ namespace UnityEngine.Experimental.Rendering.HDPipeline
             {
                 // r: multiplier, g: EV100
                 return rtHandleSystem.Alloc(1, 1, colorFormat: k_ExposureFormat,
-                    sRGB: false, enableRandomWrite: true, name: $"EV100 Exposure ({id}) {frameIndex}"
+                    sRGB: false, enableRandomWrite: true, name: $"Exposure Texture ({id}) {frameIndex}"
                 );
             }
 
@@ -1580,8 +1588,11 @@ namespace UnityEngine.Experimental.Rendering.HDPipeline
                 (int)((k_LogLutSize + threadZ - 1u) / threadZ)
             );
 
-            // Setup the uber shader
+            // This should be EV100 instead of EV but given that EV100(0) isn't equal to 1, it means
+            // we can't use 0 as the default neutral value which would be confusing to users
             float postExposureLinear = Mathf.Pow(2f, m_ColorAdjustments.postExposure);
+
+            // Setup the uber shader
             var logLutSettings = new Vector4(1f / k_LogLutSize, k_LogLutSize - 1f, postExposureLinear, 0f);
             cmd.SetComputeTextureParam(cs, kernel, HDShaderIDs._LogLut3D, m_InternalLogLut);
             cmd.SetComputeVectorParam(cs, HDShaderIDs._LogLut3D_Params, logLutSettings);
